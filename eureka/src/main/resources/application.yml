@@ -1,0 +1,20 @@
+#server:
+#  port: 8761
+eureka:
+  instance:
+#    hostname: ${eureka.instance.hostName}
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+  client:
+    service-url:
+      #配置注册的地址
+      defaultZone: http://localhost:8761/eureka/
+      #配置不注册自己 默认true
+    register-with-eureka1: false
+  server:
+    #配置是否开启自我保护机制 只能在开发环境关闭
+    enable-self-preservation: false
+spring:
+  application:
+    name: eureka
+
