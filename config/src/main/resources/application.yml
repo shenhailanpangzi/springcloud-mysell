@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: CONFIG
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/shenhailanpangzi/config-repo
+          username: ShenHaiLanPangZi
+          password: lanpangzi123
+          #配置文件从远端仓库拉取到本地的路径
+          basedir: F:/spring boot/SpringCloud_mysell/basedir
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instanceId: ${spring.application.name}:${spring.cloud.client.ip-address}:${spring.application.instance_id:${server.port}}
+      #不知道为什么不会使用默认的 application name
+#    appname: config
