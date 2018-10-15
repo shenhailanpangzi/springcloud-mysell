@@ -1,4 +1,4 @@
-package com.zly.user.consant;
+package com.lanpang.server.consant;
 
 public class RedisCons {
 

@@ -4,7 +4,8 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 
-/** 买家端 订单入参
+/**
+ * 买家端 订单入参
  * Created by 杨浩
  * 2018-06-18 23:31
  */

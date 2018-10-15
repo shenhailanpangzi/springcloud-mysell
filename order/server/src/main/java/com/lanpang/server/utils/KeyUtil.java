@@ -11,6 +11,7 @@ public class KeyUtil {
     /**
      * 生成唯一的主键 并不能100%唯一
      * 格式: 时间+随机数
+     *
      * @return
      */
     //synchronized关键字 在执行synchronized代码块时会锁定当前的对象，

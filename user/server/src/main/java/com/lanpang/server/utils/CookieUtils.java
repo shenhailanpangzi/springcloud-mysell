@@ -1,4 +1,4 @@
-package com.zly.user.utils;
+package com.lanpang.server.utils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;

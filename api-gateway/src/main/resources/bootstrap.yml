@@ -5,7 +5,7 @@ eureka:
 #先载入先启动配置文件
 spring:
   application:
-    name: order
+    name: api-gateway
   cloud:
     config:
       discovery:
@@ -15,14 +15,24 @@ spring:
         service-id: config
       #配置环境名
       profile: dev
-    stream:
-      bindings:
-        myMessage:
-          #分组 解决集群情况下被重复消费问题
-          group: order
-          #序列化消息队列消息
-          content-type: application/json
-  redis:
-    port: 6379
-    host: localhost
-#      uri: http://localhost:8080
+zuul:
+  routes:
+#    自定义路由地址 myProduct是路由规则名称 随便写
+    myProduct:
+#      将/myProduct/** 路由到product
+      path: /myProduct/**
+      serviceId: product
+#      敏感头信息，默认过滤"Cookie", "Set-Cookie", "Authorization"，这里将它配置为空
+      sensitiveHeaders:
+#    简单写法
+#    product: /myProduct/**
+#  配置不可访问的地址
+  ignored-patterns:
+    - /product/product/list
+#  全部服务忽略敏感头（全部服务都可传递cookie）
+  sensitive-headers:
+management:
+  endpoints:
+    web:
+      exposure:
+        include: bus-refresh #刷新配置

@@ -1,6 +1,7 @@
 package com.lanpang.server.utils;
 
-/**金额比较是否相等，精确到0.01  相等返回true
+/**
+ * 金额比较是否相等，精确到0.01  相等返回true
  * Created by
  * 2018-07-09 16:56
  */
@@ -10,6 +11,7 @@ public class MathUtil {
 
     /**
      * 比较2个金额是否相等
+     *
      * @param d1
      * @param d2
      * @return
@@ -18,7 +20,7 @@ public class MathUtil {
         Double result = Math.abs(d1 - d2);
         if (result < MONEY_RANGE) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }

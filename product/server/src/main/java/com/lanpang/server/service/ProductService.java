@@ -19,6 +19,7 @@ public interface ProductService {
 
     /**
      * 查询所有在架商品列表
+     *
      * @return
      */
     List<ProductInfo> findUpAll();
@@ -32,8 +33,8 @@ public interface ProductService {
     //加库存
     void increaseStock(List<CartDTO> cartDTOList);
 
-    //减库存
-    void decreaseStock(List<CartDTO> cartDTOList);
+    //发送扣库存mq消息
+    void decreaseStockProcess(List<CartDTO> cartDTOList);
 
     //上架
     ProductInfo onSale(String productId);

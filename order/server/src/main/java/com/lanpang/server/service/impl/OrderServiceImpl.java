@@ -20,13 +20,17 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**订单
+/**
+ * 订单
  * Created by 杨浩
  * 2018-06-11 18:43
  */
@@ -44,13 +48,14 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ProductClient productClient;
 
-    /** 创建订单. */
+    /**
+     * 创建订单.
+     */
     @Override
     @Transactional
     public OrderDTO create(OrderDTO orderDTO) {
         String orderId = KeyUtil.genUniqueKey();
-        //默认总价为0
-        BigDecimal orderAmount = new BigDecimal(BigInteger.ZERO);
+
         //1. 查询商品（数量, 价格）查询所有上架商品是否存在
         List<String> productIdList = orderDTO.getOrderDetailList().stream()
                 .map(e -> e.getProductId())
@@ -59,8 +64,16 @@ public class OrderServiceImpl implements OrderService {
 //                .map(OrderDetail::getProductId)
 //                .collect(Collectors.toList());
         //查询商品信息(调用商品服务)
-        List<ProductInfoOutput> productInfoList=  productClient.findByProductIdIn(productIdList);
-        for (OrderDetail orderDetail: orderDTO.getOrderDetailList()) {
+        List<ProductInfoOutput> productInfoList = productClient.findByProductIdIn(productIdList);
+//        秒杀场景查询商品 start。。。
+        //1、读redis中的库存，库存保存在redis中
+        //2、通过redis库存判断库存是否充足，减库存并将新值重新设置进redis，多线程并发情况下加分布式锁
+        //3、订单服务数据写入数据库，发送消息返回结果
+        //4、订单入库异常，手动回滚redis数据
+//        秒杀场景查询商品 end。。。
+        //2、计算总价 默认总价为0
+        BigDecimal orderAmount = new BigDecimal(BigInteger.ZERO);
+        for (OrderDetail orderDetail : orderDTO.getOrderDetailList()) {
             for (ProductInfoOutput productInfo : productInfoList) {
                 //判断商品是否存在
                 if (productInfo.getProductId().equals(orderDetail.getProductId())) {
@@ -74,12 +87,17 @@ public class OrderServiceImpl implements OrderService {
                     //将productInfo拷贝到orderDetail 属性值是null也会被拷贝
                     BeanUtils.copyProperties(productInfo, orderDetail);
                     orderDetailRepository.save(orderDetail);
-                }else {
-                    throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
                 }
             }
         }
-        //3. 写入订单数据库（orderMaster和orderDetail）
+
+        //3. 异步扣库存
+        List<DecreaseStockInput> decreaseStockInputs = orderDTO.getOrderDetailList().stream()
+                .map(e -> new DecreaseStockInput(e.getProductId(), e.getProductQuantity()))
+                .collect(Collectors.toList());
+        productClient.decreaseStock(decreaseStockInputs);
+
+        //4. 写入订单数据库（orderMaster和orderDetail）
         OrderMaster orderMaster = new OrderMaster();
         orderDTO.setOrderId(orderId);
         BeanUtils.copyProperties(orderDTO, orderMaster);
@@ -88,15 +106,7 @@ public class OrderServiceImpl implements OrderService {
         orderMaster.setPayStatus(PayStatusEnum.WAIT.getCode());
         orderMasterRepository.save(orderMaster);
 
-        //4. 扣库存
-        List<DecreaseStockInput> decreaseStockInputs = orderDTO.getOrderDetailList().stream()
-                .map(e ->new DecreaseStockInput(e.getProductId(),e.getProductQuantity()))
-                .collect(Collectors.toList());
-        productClient.decreaseStock(decreaseStockInputs);
-//        发送websocket消息
-//        webSocket.sendMessage("有新的订单："+orderDTO.getOrderId());
         return orderDTO;
-
     }
 
 //    /** 查询单个订单. */
@@ -124,7 +134,42 @@ public class OrderServiceImpl implements OrderService {
 //
 //        return new PageImpl<OrderDTO>(orderDTOList, pageable, orderMasterPage.getTotalElements());
 //    }
-//
+    /** 完结订单. */
+    @Override
+    @Transactional
+    public OrderDTO finish(String orderId) {
+        //1、查询订单
+        Optional<OrderMaster> orderMasterOptional = orderMasterRepository.findById(orderId);
+        //2、判断订单是否存在
+        if (!orderMasterOptional.isPresent()){
+            log.error("【完结订单】订单不存在, orderId={}", orderMasterOptional.get().getOrderId());
+            throw new SellException(ResultEnum.ORDER_NOT_EXIST);
+        }
+        //3、判断订单状态 是否是新订单
+        if (orderMasterOptional.get().getOrderStatus()!=OrderStatusEnum.NEW.getCode()){
+            log.error("【完结订单】订单状态不正确, orderId={}, OrderStatus={}", orderMasterOptional.get().getOrderId(),orderMasterOptional.get().getOrderStatus());
+            throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+        }
+        //4、修改订单状态
+        orderMasterOptional.get().setOrderStatus(OrderStatusEnum.FINISHED.getCode());
+        OrderMaster updateResult = orderMasterRepository.save(orderMasterOptional.get());
+        if (updateResult == null) {
+            log.error("【完结订单】更新失败, orderMaster={}", orderMasterOptional.get());
+            throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
+        }
+        //5、组装反参
+        OrderDTO orderDTO = new OrderDTO();
+        orderDTO.setOrderStatus(OrderStatusEnum.FINISHED.getCode());
+        BeanUtils.copyProperties(orderMasterOptional.get(), orderDTO);
+        List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(orderId);
+        if (CollectionUtils.isEmpty(orderDetails)){
+            throw new SellException(ResultEnum.ORDERDETAIL_NOT_EXIST);
+        }
+        orderDTO.setOrderDetailList(orderDetails);
+        //推送微信模版消息
+//        pushMessageService.orderStatus(orderDTO);
+        return orderDTO;
+    }
 //    /** 取消订单. */
 //    @Override
 //    @Transactional
@@ -162,30 +207,7 @@ public class OrderServiceImpl implements OrderService {
 //        }
 //        return orderDTO;
 //    }
-//    /** 完结订单. */
-//    @Override
-//    @Transactional
-//    public OrderDTO finish(OrderDTO orderDTO) {
-//        //1、判断订单状态
-//        if (!orderDTO.getOrderStatus().equals(OrderStatusEnum.NEW.getCode())) {
-//            log.error("【完结订单】订单状态不正确, orderId={}, orderStatus={}", orderDTO.getOrderId(), orderDTO.getOrderStatus());
-//            throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
-//        }
-//
-//        //2、修改订单状态
-//        orderDTO.setOrderStatus(OrderStatusEnum.FINISHED.getCode());
-//        OrderMaster orderMaster = new OrderMaster();
-//        BeanUtils.copyProperties(orderDTO, orderMaster);
-//        OrderMaster updateResult = orderMasterRepository.save(orderMaster);
-//        if (updateResult == null) {
-//            log.error("【完结订单】更新失败, orderMaster={}", orderMaster);
-//            throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
-//        }
-//
-//        //推送微信模版消息
-////        pushMessageService.orderStatus(orderDTO);
-//        return orderDTO;
-//    }
+
 //    /** 支付订单. */
 //    @Override
 //    @Transactional

@@ -9,7 +9,7 @@ import lombok.Getter;
  * 2018-06-11 18:55
  */
 @Getter
-public class SellException extends RuntimeException{
+public class SellException extends RuntimeException {
 
     private Integer code;
 

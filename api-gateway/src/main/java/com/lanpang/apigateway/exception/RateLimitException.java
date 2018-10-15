@@ -6,5 +6,5 @@ package com.lanpang.apigateway.exception;
  * @author: yanghao
  * @create: 2018-10-08 15:05
  **/
-public class RateLimitException {
+public class RateLimitException extends RuntimeException{
 }

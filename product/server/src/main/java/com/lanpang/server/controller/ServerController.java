@@ -20,8 +20,8 @@ public class ServerController {
     private ProductService productService;
 
     @GetMapping("/msg")
-    public String msg(HttpServletRequest request){
-        return "this is a product msg!!!"+request.getRemoteHost()+request.getServerPort();
+    public String msg(HttpServletRequest request) {
+        return "this is a product msg!!!" + request.getRemoteHost() + request.getServerPort();
     }
 
 

@@ -1,8 +1,9 @@
-package com.zly.user.service.impl;
+package com.lanpang.server.service.impl;
 
-import com.zly.user.dao.UserDao;
-import com.zly.user.entity.UserInfo;
-import com.zly.user.service.IUserService;
+
+import com.lanpang.server.dao.UserDao;
+import com.lanpang.server.dataobject.UserInfo;
+import com.lanpang.server.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

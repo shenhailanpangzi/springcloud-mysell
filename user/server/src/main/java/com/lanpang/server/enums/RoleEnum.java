@@ -1,4 +1,4 @@
-package com.zly.user.enums;
+package com.lanpang.server.enums;
 
 import lombok.Getter;
 

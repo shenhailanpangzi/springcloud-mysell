@@ -1,8 +1,8 @@
-package com.zly.user.utils;
+package com.lanpang.server.utils;
 
 
-import com.zly.user.entity.ResultVO;
-import com.zly.user.enums.ResultEnum;
+import com.lanpang.server.dataobject.ResultVO;
+import com.lanpang.server.enums.ResultEnum;
 
 public class ResultUtils {
 

@@ -5,7 +5,6 @@ import com.lanpang.apigateway.utils.CookieUtil;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
-import com.sun.javafx.binding.StringFormatter;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.zuul.filters.support.FilterConstants;
@@ -23,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
  * @create: 2018-10-08 11:22
  **/
 @Component
-public class AuthFilter extends ZuulFilter {
+public class AuthSellerFilter extends ZuulFilter {
     @Autowired
     private StringRedisTemplate redisTemplate;
     @Override
@@ -40,7 +39,13 @@ public class AuthFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
-        return true;
+        //获取上下文
+        RequestContext currentContext = RequestContext.getCurrentContext();
+        HttpServletRequest request = currentContext.getRequest();
+        if ("/order/order/finish".equals(request.getRequestURI())) {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -53,14 +58,6 @@ public class AuthFilter extends ZuulFilter {
          * /order/finish 只能卖家访问(cookie里有token，redis中有值)
          * /product/list 都可访问
          */
-        if ("/order/order/create".equals(request.getRequestURI())) {
-            Cookie cookie = CookieUtil.get(request,"openid");
-            if (cookie==null || StringUtils.isEmpty(cookie.getValue())){
-                currentContext.setSendZuulResponse(false);
-                currentContext.setResponseStatusCode(HttpStatus.SC_UNAUTHORIZED);
-            }
-        }
-        if ("/order/order/finish".equals(request.getRequestURI())) {
             Cookie cookie = CookieUtil.get(request,"token");
             if (cookie==null
                     || StringUtils.isEmpty(cookie.getValue())
@@ -68,7 +65,6 @@ public class AuthFilter extends ZuulFilter {
                 currentContext.setSendZuulResponse(false);
                 currentContext.setResponseStatusCode(HttpStatus.SC_UNAUTHORIZED);
             }
-        }
         return null;
     }
 }

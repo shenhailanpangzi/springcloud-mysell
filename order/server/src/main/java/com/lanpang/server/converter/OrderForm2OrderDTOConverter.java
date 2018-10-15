@@ -33,7 +33,8 @@ public class OrderForm2OrderDTOConverter {
         try {
             orderDetailList = gson.fromJson(orderForm.getItems(),
 //                    new TypeToken中写要转换成的对象
-            new TypeToken<List<OrderDetail>>(){}.getType());
+                    new TypeToken<List<OrderDetail>>() {
+                    }.getType());
         } catch (Exception e) {
             log.error("【对象转换】错误, string={}", orderForm.getItems());
             throw new SellException(ResultEnum.PARAM_ERROR);

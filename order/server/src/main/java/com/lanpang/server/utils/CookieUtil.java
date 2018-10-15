@@ -15,6 +15,7 @@ public class CookieUtil {
 
     /**
      * 设置
+     *
      * @param response
      * @param name
      * @param value
@@ -32,6 +33,7 @@ public class CookieUtil {
 
     /**
      * 获取cookie
+     *
      * @param request
      * @param name
      * @return
@@ -41,13 +43,14 @@ public class CookieUtil {
         Map<String, Cookie> cookieMap = readCookieMap(request);
         if (cookieMap.containsKey(name)) {
             return cookieMap.get(name);
-        }else {
+        } else {
             return null;
         }
     }
 
     /**
      * 将cookie封装成Map
+     *
      * @param request
      * @return
      */
@@ -55,7 +58,7 @@ public class CookieUtil {
         Map<String, Cookie> cookieMap = new HashMap<>();
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
-            for (Cookie cookie: cookies) {
+            for (Cookie cookie : cookies) {
                 cookieMap.put(cookie.getName(), cookie);
             }
         }

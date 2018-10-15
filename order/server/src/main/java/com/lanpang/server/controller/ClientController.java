@@ -39,10 +39,11 @@ public class ClientController {
 
     /**
      * 通过restTemplate链接服务端
+     *
      * @return
      */
     @GetMapping("/getProductMsg")
-    public String getProductMsg(){
+    public String getProductMsg() {
 //      //1、第一种方式 直接使用 restTemplate 缺点（url写死，）
 //        RestTemplate restTemplate = new RestTemplate();
 //        String response = restTemplate.getForObject("http://localhost:8091/msg/",String.class);
@@ -50,7 +51,7 @@ public class ClientController {
         //2.第二种方式 利用loadBalancerClient 通过应用名获取url 然后再使用resttemplate
 //            选择调用地址
         ServiceInstance serviceInstance = loadBalancerClient.choose("PRODUCT");
-        String url = String.format("http://" + serviceInstance.getHost() +":"+ serviceInstance.getPort() + "/msg");
+        String url = String.format("http://" + serviceInstance.getHost() + ":" + serviceInstance.getPort() + "/msg");
         RestTemplate restTemplate = new RestTemplate();
         String response = restTemplate.getForObject(url, String.class);
         //3.第三种方式 使用@LoadBalanced注解 配置bean方式 可以在url中使用应用名字
@@ -63,7 +64,7 @@ public class ClientController {
      * 通过Feign调用
      */
     @GetMapping("/getFProductMsg")
-    public String getFProductMsg(){
+    public String getFProductMsg() {
         String response = productClient.productMsg();
         log.info("response={}", response);
         return response;
@@ -73,27 +74,27 @@ public class ClientController {
      * 通过Feign调用
      */
     @GetMapping("/findByProductIdIn")
-    public List<ProductInfoOutput> findByProductIdIn(){
-        List<String> productIdList = Arrays.asList("123456","1234568");
+    public List<ProductInfoOutput> findByProductIdIn() {
+        List<String> productIdList = Arrays.asList("123456", "1234568");
         List<ProductInfoOutput> productInfoList = productClient.findByProductIdIn(productIdList);
         log.info("response={}", productInfoList);
         return productInfoList;
     }
 
     @GetMapping("/decreaseStock")
-    public String decreaseStock(){
+    public String decreaseStock() {
         List<DecreaseStockInput> cartDTOList = Arrays.asList(
-                new DecreaseStockInput("123456",2),
-                new DecreaseStockInput("1234568",2));
+                new DecreaseStockInput("123456", 2),
+                new DecreaseStockInput("1234568", 2));
         productClient.decreaseStock(cartDTOList);
         return "ok";
     }
 
     @GetMapping("/increaseStock")
-    public String increaseStock(){
+    public String increaseStock() {
         List<DecreaseStockInput> cartDTOList = Arrays.asList(
-                new DecreaseStockInput("123456",2),
-                new DecreaseStockInput("1234568",2));
+                new DecreaseStockInput("123456", 2),
+                new DecreaseStockInput("1234568", 2));
         productClient.increaseStock(cartDTOList);
         return "ok";
     }

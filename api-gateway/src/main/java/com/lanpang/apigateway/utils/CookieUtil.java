@@ -1,4 +1,4 @@
-package com.lanpang.server.utils;
+package com.lanpang.apigateway.utils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

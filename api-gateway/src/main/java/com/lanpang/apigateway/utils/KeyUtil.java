@@ -1,4 +1,4 @@
-package com.lanpang.server.utils;
+package com.lanpang.apigateway.utils;
 
 import java.util.Random;
 

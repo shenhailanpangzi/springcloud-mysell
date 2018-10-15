@@ -1,4 +1,4 @@
-package com.zly.user.entity;
+package com.lanpang.server.dataobject;
 
 import lombok.Data;
 

@@ -1,11 +1,11 @@
-package com.zly.user.enums;
+package com.lanpang.server.enums;
 
 import lombok.Getter;
 
 @Getter
 public enum ResultEnum {
-    LOGIN_FAIL(1, "登陆失败"),
-    ERROR_ROLE(2, "权限不对")
+    LOGIN_FAIL(1, "未查询到该用户"),
+    ERROR_ROLE(2, "该用户权限不正确")
     ;
 
     private Integer code;

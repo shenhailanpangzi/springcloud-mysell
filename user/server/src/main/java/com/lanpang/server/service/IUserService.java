@@ -1,6 +1,7 @@
-package com.zly.user.service;
+package com.lanpang.server.service;
 
-import com.zly.user.entity.UserInfo;
+
+import com.lanpang.server.dataobject.UserInfo;
 
 public interface IUserService {
 

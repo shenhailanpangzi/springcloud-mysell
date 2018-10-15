@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +37,8 @@ public class ProductController {
 
 
     @GetMapping("/list")
+    //allowCredentials = "true" 标识允许cookie跨域
+    @CrossOrigin(allowCredentials = "true")
     public ResultVO list() {
         //1. 查询所有的上架商品
         List<ProductInfo> productInfoList = productService.findUpAll();
@@ -60,13 +63,13 @@ public class ProductController {
 
         //3. 数据拼装
         List<ProductVO> productVOList = new ArrayList<>();
-        for (ProductCategory productCategory: productCategoryList) {
+        for (ProductCategory productCategory : productCategoryList) {
             ProductVO productVO = new ProductVO();
             productVO.setCategoryType(productCategory.getCategoryType());
             productVO.setCategoryName(productCategory.getCategoryName());
 
             List<ProductInfoVO> productInfoVOList = new ArrayList<>();
-            for (ProductInfo productInfo: productInfoList) {
+            for (ProductInfo productInfo : productInfoList) {
                 if (productInfo.getCategoryType().equals(productCategory.getCategoryType())) {
                     ProductInfoVO productInfoVO = new ProductInfoVO();
                     //Spring提供的BeanUtils  可以把一个对象属性的值拷贝到另一个对象
@@ -81,27 +84,43 @@ public class ProductController {
     }
 
     @PostMapping("/findByProductIdIn")
-    public List<ProductInfo> findByProductIdIn(@RequestBody List<String> productIdList){
+    public List<ProductInfo> findByProductIdIn(@RequestBody List<String> productIdList) {
+//        测试熔断器代码start。。。
+//        try {
+//        boolean a =new Random().nextBoolean();
+//        if (a){
+//            Thread.sleep(2000);
+//            a=false;
+//        }else {
+//            Thread.sleep(1000);
+//            a=true;
+//        }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        测试熔断器代码end。。。
         return productService.findByProductIdIn(productIdList);
     }
 
     /**
-     * 扣库存
+     * 异步扣库存
+     *
      * @param cartDTOList
      * @return
      */
-    @PostMapping("/decreaseStock")
-    public void decreaseStock(@RequestBody List<CartDTO> cartDTOList){
-        productService.decreaseStock(cartDTOList);
+    @PostMapping("/decreaseStockProcess")
+    public void decreaseStock(@RequestBody List<CartDTO> cartDTOList) {
+        productService.decreaseStockProcess(cartDTOList);
     }
 
     /**
      * 加库存
+     *
      * @param cartDTOList
      * @return
      */
     @PostMapping("/increaseStock")
-    public void increaseStock(@RequestBody List<CartDTO> cartDTOList){
-            productService.increaseStock(cartDTOList);
+    public void increaseStock(@RequestBody List<CartDTO> cartDTOList) {
+        productService.increaseStock(cartDTOList);
     }
 }

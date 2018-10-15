@@ -1,4 +1,4 @@
-package com.lanpang.server.consant;
+package com.lanpang.apigateway.consant;
 
 public class RedisCons {
 

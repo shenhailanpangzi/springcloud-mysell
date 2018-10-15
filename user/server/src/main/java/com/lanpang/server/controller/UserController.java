@@ -1,14 +1,15 @@
-package com.zly.user.controller;
+package com.lanpang.server.controller;
 
-import com.zly.user.consant.CookieCons;
-import com.zly.user.consant.RedisCons;
-import com.zly.user.entity.ResultVO;
-import com.zly.user.entity.UserInfo;
-import com.zly.user.enums.ResultEnum;
-import com.zly.user.enums.RoleEnum;
-import com.zly.user.service.IUserService;
-import com.zly.user.utils.CookieUtils;
-import com.zly.user.utils.ResultUtils;
+
+import com.lanpang.server.consant.CookieCons;
+import com.lanpang.server.consant.RedisCons;
+import com.lanpang.server.dataobject.ResultVO;
+import com.lanpang.server.dataobject.UserInfo;
+import com.lanpang.server.enums.ResultEnum;
+import com.lanpang.server.enums.RoleEnum;
+import com.lanpang.server.service.IUserService;
+import com.lanpang.server.utils.CookieUtils;
+import com.lanpang.server.utils.ResultUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -32,14 +33,15 @@ public class UserController {
     @GetMapping("/buyer")
     public ResultVO buyerLogin(@RequestParam("openid") String openid, HttpServletResponse response) {
         UserInfo userInfo = userService.findUserByOpenid(openid);
+        //1、判断是否与数据库匹配
         if (userInfo == null || userInfo.getId() == null) {
             return ResultUtils.error(ResultEnum.LOGIN_FAIL);
         }
-
+        //2、判断角色
         if (!userInfo.getRole().equals(RoleEnum.BUYER.getCode())) {
             return ResultUtils.error(ResultEnum.ERROR_ROLE);
         }
-
+        //3、放入cookie
         CookieUtils.set(response, CookieCons.OPENID, userInfo.getOpenid(), CookieCons.EXPIRE);
         return ResultUtils.success(userInfo);
     }
@@ -48,6 +50,7 @@ public class UserController {
     @GetMapping("/seller")
     public ResultVO sellerLogin(@RequestParam("openid") String openid,
                                 HttpServletResponse response,
+//@CookieValue用来获取Cookie中的值1、value：参数名称2、required：是否必须3、defaultValue：默认值
                                 @CookieValue(value = CookieCons.TOKEN_NAME, required = false) String cookieToken) {
         // 判断是否已经登陆
         if (StringUtils.isNotBlank(cookieToken)) {
@@ -71,7 +74,7 @@ public class UserController {
         redisTemplate.opsForValue().set(String.format(RedisCons.TOKEN_TEMPLATE, token),
                 openid,
                 expire,
-                TimeUnit.SECONDS
+                TimeUnit.SECONDS//时间单位
         );
 
         CookieUtils.set(response, CookieCons.TOKEN_NAME, token, CookieCons.EXPIRE);

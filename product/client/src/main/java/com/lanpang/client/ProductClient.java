@@ -16,7 +16,7 @@ import java.util.List;
  * @author: yanghao
  * @create: 2018-09-12 10:31
  **/
-@FeignClient(name = "product")
+@FeignClient(name = "product", fallback = ProductClient.ProductClientFallback.class)
 public interface ProductClient {
 
     @GetMapping("/msg")
@@ -28,9 +28,47 @@ public interface ProductClient {
     @PostMapping("/product/findByProductIdIn")
     List<ProductInfoOutput> findByProductIdIn(@RequestBody List<String> productIdList);
 
-    @GetMapping("product/decreaseStock")
+    @GetMapping("product/decreaseStockProcess")
     void decreaseStock(List<DecreaseStockInput> decreaseStockInputs);
 
     @GetMapping("product/increaseStock")
     void increaseStock(List<DecreaseStockInput> decreaseStockInputs);
+
+    /**
+     * 如果产生服务降级就会就如这个类
+     */
+    @Component
+    static class ProductClientFallback implements ProductClient{
+
+        @Override
+        public String productMsg() {
+            System.out.println("productMsg 方法 进入熔断器~~");
+            return "productMsg 方法 进入熔断器~~";
+        }
+
+        @Override
+        public String getFProductMsg() {
+            return "getFProductMsg 方法 进入熔断器~~";
+        }
+
+        @Override
+        public List<ProductInfoOutput> findByProductIdIn(List<String> productIdList) {
+            System.out.println("findByProductIdIn 方法 进入熔断器~~");
+
+            return null;
+        }
+
+        @Override
+        public void decreaseStock(List<DecreaseStockInput> decreaseStockInputs) {
+            System.out.println("decreaseStock 方法 进入熔断器~~");
+
+        }
+
+        @Override
+        public void increaseStock(List<DecreaseStockInput> decreaseStockInputs) {
+            System.out.println("increaseStock 方法 进入熔断器~~");
+
+        }
+    }
 }
+

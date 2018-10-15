@@ -7,9 +7,9 @@
     <artifactId>product</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <modules>
-       <module>common</module>
-       <module>server</module>
-       <module>client</module>
+        <module>common</module>
+        <module>server</module>
+        <module>client</module>
     </modules>
     <!--多模块这里要改成pom-->
     <packaging>pom</packaging>
@@ -28,7 +28,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <spring-cloud.version>Finchley.SR1</spring-cloud.version>
+        <spring-cloud.version>Finchley.RELEASE</spring-cloud.version>
         <product-common.version>0.0.1-SNAPSHOT</product-common.version>
     </properties>
 
@@ -50,15 +50,22 @@
         </dependencies>
     </dependencyManagement>
 
-    <build>
-        <plugins>
-            <!--<plugin>-->
-                <!--<groupId>org.springframework.boot</groupId>-->
-                <!--&lt;!&ndash;只有打jar或者war包时才加&ndash;&gt;-->
-                <!--&lt;!&ndash;Spring Boot Maven plugin能够将Spring Boot应用打包为可执行的jar或war文件，然后以通常的方式运行Spring Boot应用。&ndash;&gt;-->
-                <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
-            <!--</plugin>-->
-        </plugins>
-    </build>
-
+    <repositories>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>maven central</id>
+            <name>maven central</name>
+            <url>http://central.maven.org/maven2/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

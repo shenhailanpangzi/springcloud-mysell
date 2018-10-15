@@ -1,6 +1,7 @@
-package com.zly.user.dao;
+package com.lanpang.server.dao;
 
-import com.zly.user.entity.UserInfo;
+
+import com.lanpang.server.dataobject.UserInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
