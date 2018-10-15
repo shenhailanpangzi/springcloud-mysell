@@ -6,8 +6,8 @@ spring:
       server:
         git:
           uri: https://github.com/shenhailanpangzi/config-repo
-          username: ShenHaiLanPangZi
-          password: lanpangzi123
+          username: 'AQCa2yyeVZCkxUvuZJZ2gRXfOSM4CpxDw7abqea1guJHXOcMDvoVJsEkd+ag48wJobqcacIGnLi0BIDOF+kSKEyDAZ+9rY7thf3tKwuibXxE+nH2858t5eUJmmzi53yOr75E7z/517qZSN7PZ9jzkDy7kam6RjCfxDzUDwC6atDjeXtakmn/1S71iMH/Ap1Djbh+jMH4E5e/IQ739eXvRpD9MOKDCbelGzmEDHQQ7YxMEQ1T2yMyGRItvxGcLah7n5fgbQjmxy7jWGJ++I7+bzkP61R3tQYnLy+c6wXNjr+6YnFRDKnkoBqVsrNUuijcu5I5MzUeiaPTRMaRcmMpAju8ZYHN3TwHO85tCBPxHOckfcaC6f6pfEHTdo92ZN/gA0pt3JVH86qFsR4jWg+B3Emj'
+          password: 'AQChYkl+teknTGI96iMdekv75iZhxCJAOcgw7JM9c3y4gLFTxINF6wpufidmUSUM/M7SOjgtjKtLjo8m6RBrk/CPTIdorv5YzB9Gsorq2WLCFMRprfatcjxy+ZfZXeXp1TYpS5nK1fmikrHMHHQt7gMxiQvxvtS0hz7Ld1rJVQstMEGScavWUwH2St1Wz4m013Rl2iqk72KYxE+p/N9HJxkJg5pa5Gnx2+oGkwVqH2QnsCsGZSXXVthjKhkRSMi61hr/ITDuNtXjiX3cc2oL0gR79gEFxKJYAri5Mz/PVHj09ckrHFQlLkD8td32mJSjYP0++yWs3Nmf6FU1kNVnnUu8vMZ+NjTZtGgZ0Kt9giu+0NpedZnC20YcPLJRHjVr9W0='
           #配置文件从远端仓库拉取到本地的路径
           basedir: F:/spring boot/SpringCloud_mysell/basedir
 eureka:
