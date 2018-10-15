@@ -26,19 +26,3 @@ spring:
     port: 6379
     host: localhost
 #      uri: http://localhost:8080
-#hystrix:
-#  command:
-#    default:
-#      execution:
-#        isolation:
-#          thread:
-#            timeoutInMilliseconds: 1000 #配置超时时间配置
-#    getProductInfoList:
-#      execution:
-#        isolation:
-#          thread:
-#            timeoutInMilliseconds: 3000 #配置特定的方法超时时间配置
-#feign:
-#  hystrix:
-#    #配置feign开启hystrix
-#    enabled: true
